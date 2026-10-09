@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>轻弩贯通2 · 打桩期望排名 (可切换基准)</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: system-ui, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+        }
+        body {
+            background: #0b0f14;
+            color: #e8edf2;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 1.5rem 1rem;
+        }
+        .container {
+            max-width: 1300px;
+            width: 100%;
+        }
+        h1 {
+            font-size: 2rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            margin: 0 0 0.25rem 0;
+            color: #f5c542;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .subhead {
+            color: #9aa9b7;
+            margin-bottom: 1.8rem;
+            border-left: 3px solid #f5c542;
+            padding-left: 12px;
+            font-size: 0.95rem;
+        }
+        .panel {
+            background: #151e26;
+            border-radius: 24px;
+            padding: 1.6rem 1.8rem;
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.7), 0 0 0 1px #2a3a47;
+            margin-bottom: 2rem;
+        }
+        .panel h2 {
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: #bdd3e8;
+            margin: 0 0 1.2rem 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .grid-inputs {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem 1.2rem;
+        }
+        .input-card {
+            background: #0d1419;
+            border-radius: 14px;
+            padding: 10px 14px 12px 14px;
+            border: 1px solid #25333e;
+            transition: 0.15s;
+        }
+        .input-card:hover {
+            border-color: #3e5568;
+        }
+        .input-card label {
+            display: block;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #8b9eb0;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+        .input-card .combo-name {
+            font-size: 0.85rem;
+            color: #cfdde9;
+            margin-bottom: 6px;
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .input-card input {
+            background: #0b1117;
+            border: 1px solid #2f404e;
+            border-radius: 10px;
+            padding: 8px 12px;
+            font-size: 1rem;
+            color: white;
+            outline: none;
+            width: 100%;
+            transition: 0.15s;
+        }
+        .input-card input:focus {
+            border-color: #f5c542;
+            box-shadow: 0 0 0 3px rgba(245, 197, 66, 0.12);
+        }
+        .button-row {
+            display: flex;
+            gap: 12px;
+            margin-top: 1.8rem;
+            flex-wrap: wrap;
+        }
+        button {
+            background: #f5c542;
+            color: #0b0f14;
+            font-weight: 700;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 40px;
+            font-size: 1rem;
+            letter-spacing: 0.3px;
+            cursor: pointer;
+            transition: 0.15s;
+            box-shadow: 0 4px 10px rgba(245, 197, 66, 0.25);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        button:hover {
+            background: #ffd95c;
+            transform: translateY(-1px);
+            box-shadow: 0 8px 18px rgba(245, 197, 66, 0.35);
+        }
+        button.secondary {
+            background: #2a3a47;
+            color: #d0dde9;
+            box-shadow: none;
+        }
+        button.secondary:hover {
+            background: #354a5a;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.4);
+        }
+        .result-section {
+            margin-top: 1rem;
+        }
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 0.8rem;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .result-header h2 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #bdd3e8;
+            margin: 0;
+        }
+        .badge {
+            background: #1e2d39;
+            padding: 4px 14px;
+            border-radius: 40px;
+            font-size: 0.8rem;
+            color: #8faec9;
+        }
+        .badge.clickable {
+            cursor: pointer;
+            transition: 0.15s;
+            border: 1px solid transparent;
+        }
+        .badge.clickable:hover {
+            background: #2a3d4d;
+            border-color: #f5c542;
+            color: #f5c542;
+        }
+        .table-wrapper {
+            overflow-x: auto;
+            border-radius: 16px;
+            box-shadow: 0 0 0 1px #25333e;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #121b22;
+            border-radius: 16px;
+            overflow: hidden;
+            min-width: 1050px;
+        }
+        th {
+            background: #0d161d;
+            color: #a0b7cc;
+            font-weight: 600;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.7px;
+            padding: 14px 8px;
+            text-align: center;
+            border-bottom: 1px solid #25333e;
+            white-space: nowrap;
+        }
+        td {
+            padding: 12px 8px;
+            text-align: center;
+            border-bottom: 1px solid #1d2b35;
+            font-size: 0.9rem;
+        }
+        tr:last-child td {
+            border-bottom: none;
+        }
+        tbody tr {
+            transition: 0.1s;
+            cursor: pointer;
+        }
+        tbody tr:hover {
+            background: #1b2a36;
+        }
+        .rank-1 {
+            background: linear-gradient(90deg, #2c2410, #1e1a0e);
+            font-weight: 600;
+        }
+        .rank-1 td:first-child {
+            color: #f5c542;
+            font-weight: 800;
+        }
+        .base-row {
+            background: #1f2d1f !important;
+            box-shadow: inset 0 0 0 1px #5a8f5a;
+            font-weight: 600;
+        }
+        .base-row td {
+            border-bottom-color: #2f4a2f;
+        }
+        .base-row:hover {
+            background: #243824 !important;
+        }
+        .highlight {
+            color: #f5c542;
+            font-weight: 600;
+        }
+        .positive {
+            color: #7ed9a2;
+        }
+        .negative {
+            color: #f28b82;
+        }
+        .dps-cell {
+            font-weight: 600;
+            color: #c6d9e8;
+        }
+        .base-tag {
+            display: inline-block;
+            background: #2e4a2e;
+            color: #a0d6a0;
+            font-size: 0.6rem;
+            padding: 2px 8px;
+            border-radius: 20px;
+            margin-left: 6px;
+            vertical-align: middle;
+            letter-spacing: 0.3px;
+        }
+
+        /* ---------- 公式区样式 ---------- */
+        .formula-section {
+            margin-top: 2.5rem;
+            background: #0d1419;
+            border-radius: 20px;
+            padding: 1.8rem 2rem;
+            border: 1px solid #25333e;
+        }
+        .formula-section h2 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #bdd3e8;
+            margin: 0 0 1.2rem 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .formula-section h3 {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #f5c542;
+            margin: 1.4rem 0 0.6rem 0;
+            letter-spacing: 0.3px;
+        }
+        .formula-section h3:first-of-type {
+            margin-top: 0;
+        }
+        .formula-section p {
+            font-size: 0.88rem;
+            line-height: 1.7;
+            color: #b0c4d4;
+            margin: 0.4rem 0;
+        }
+        .formula-block {
+            background: #0b1117;
+            border-radius: 12px;
+            padding: 14px 18px;
+            margin: 10px 0;
+            border-left: 3px solid #f5c542;
+            font-family: 'SF Mono', 'Consolas', 'Monaco', monospace;
+            font-size: 0.88rem;
+            color: #e0eef9;
+            line-height: 1.9;
+            overflow-x: auto;
+        }
+        .formula-block .comment {
+            color: #61768a;
+            font-style: italic;
+        }
+        .formula-block .var {
+            color: #f5c542;
+        }
+        .formula-block .num {
+            color: #7ed9a2;
+        }
+        .formula-note {
+            font-size: 0.8rem;
+            color: #7a8b9b;
+            margin-top: 10px;
+            padding-left: 6px;
+            border-left: 2px solid #2a3a47;
+        }
+        .inline-code {
+            background: #1b2b36;
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-family: 'SF Mono', 'Consolas', monospace;
+            font-size: 0.85rem;
+            color: #f5c542;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>⚡ 贯通2轻弩 · 打桩期望排名</h1>
+    <div class="subhead">
+        开一枪54帧 · 最快装填54帧 · 快速装填84帧 · 弹丸节约20%不耗弹 (可连续触发) · 点击表格任意一行可切换基准
+    </div>
+
+    <!-- 输入卡片：8种状态 -->
+    <div class="panel">
+        <h2>🎯 每种状态的攻击力</h2>
+        <div class="grid-inputs" id="inputGrid">
+            <!-- JS动态生成8个输入框 -->
+        </div>
+        <div class="button-row">
+            <button id="calcBtn">📊 刷新排名</button>
+            <button class="secondary" id="resetBtn">重置默认 (300)</button>
+        </div>
+    </div>
+
+    <!-- 结果区域 -->
+    <div class="result-section" id="resultSection">
+        <div class="result-header">
+            <h2>🏆 DPS 期望排名</h2>
+            <div class="badge clickable" id="baseBadge" title="点击重置基准为「最快+7发+节约」">
+                <!-- JS填充 -->
+            </div>
+        </div>
+        <div class="table-wrapper">
+            <table id="rankTable">
+                <thead>
+                    <tr>
+                        <th>排名</th>
+                        <th>状态</th>
+                        <th>装填</th>
+                        <th>弹夹</th>
+                        <th>弹丸节约</th>
+                        <th>攻击力</th>
+                        <th>平均射击数</th>
+                        <th>每枪平均帧</th>
+                        <th>相对DPS</th>
+                        <th>与基准差距</th>
+                        <th>预估DPS</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    <!-- 动态渲染 -->
+                </tbody>
+            </table>
+        </div>
+        <div class="footnote">
+            * 纯打桩，单发伤害=攻击力。平均射击数已包含弹丸节约的连续触发期望（C / 0.8）。点击任意行可将其设为基准 (100%)。
+        </div>
+    </div>
+
+    <!-- ==================== 公式区 ==================== -->
+    <div class="formula-section">
+        <h2>📐 计算公式与推导过程</h2>
+        <p style="color:#8faec9;">以下为所有数值的完整推导，所有结果均可用此公式复现。不服可以自己按计算器。</p>
+
+        <h3>一、基础帧数常量</h3>
+        <div class="formula-block">
+            开火帧数 <span class="var">F</span> = <span class="num">54</span> 帧/枪<br>
+            最快装填 <span class="var">R_fast</span> = <span class="num">54</span> 帧<br>
+            快速装填 <span class="var">R_quick</span> = <span class="num">84</span> 帧
+        </div>
+
+        <h3>二、弹丸节约的数学本质（无穷级数）</h3>
+        <p>每开一枪，有 <span class="inline-code">p = 20%</span> 概率不消耗子弹，且每次独立判定，可连续触发。</p>
+        <p>设弹夹容量为 <span class="inline-code">C</span>，则平均可射击次数为：</p>
+        <div class="formula-block">
+            <span class="comment">// 级数展开：</span><br>
+            <span class="var">N</span> = C + 0.2C + 0.04C + 0.008C + …<br>
+            <span class="comment">// 等比数列求和，首项 a₁ = C，公比 q = 0.2</span><br>
+            <span class="var">N</span> = C / (1 - 0.2) = C / 0.8 = <span class="num">1.25C</span>
+        </div>
+        <div class="formula-note">
+            等价于：每枪平均消耗 <span class="inline-code">1 × 0.8 + 0 × 0.2 = 0.8 发</span>，所以 C 发子弹平均能打 <span class="inline-code">C ÷ 0.8</span> 枪。
+        </div>
+
+        <h3>三、单个循环的总帧数</h3>
+        <p>一个完整循环 = 打空弹夹 + 装填一次：</p>
+        <div class="formula-block">
+            <span class="var">T_cycle</span> = <span class="var">F</span> × <span class="var">N</span> + <span class="var">R</span><br>
+            <span class="comment">// F = 54 帧/枪，N = 平均射击数，R = 装填帧数</span>
+        </div>
+
+        <h3>四、每枪平均帧数</h3>
+        <div class="formula-block">
+            <span class="var">F_avg</span> = <span class="var">T_cycle</span> / <span class="var">N</span> = <span class="var">F</span> + <span class="var">R</span> / <span class="var">N</span>
+        </div>
+        <p>例如：最快装填 + 6发 + 无节约：</p>
+        <div class="formula-block">
+            N = 6<br>
+            T_cycle = 54 × 6 + 54 = 324 + 54 = 378 帧<br>
+            F_avg = 378 / 6 = <span class="num">63</span> 帧/枪
+        </div>
+
+        <h3>五、DPS 计算公式</h3>
+        <p>设单发伤害为 <span class="inline-code">D</span>（即你填的攻击力），游戏帧率按 <span class="inline-code">60 帧/秒</span> 计算：</p>
+        <div class="formula-block">
+            <span class="comment">// 每秒射击次数</span><br>
+            <span class="var">Shots_per_sec</span> = 60 / <span class="var">F_avg</span><br><br>
+            <span class="comment">// 每秒伤害</span><br>
+            <span class="var">DPS</span> = <span class="var">D</span> × <span class="var">Shots_per_sec</span> = <span class="var">D</span> × 60 / <span class="var">F_avg</span>
+        </div>
+
+        <h3>六、相对 DPS 与差距</h3>
+        <p>设基准组合的 DPS 为 <span class="inline-code">DPS_base</span>：</p>
+        <div class="formula-block">
+            <span class="var">相对DPS%</span> = ( 该组合DPS / <span class="var">DPS_base</span> ) × 100%<br><br>
+            <span class="var">与基准差距</span> = 相对DPS% - 100%
+        </div>
+        <div class="formula-note">
+            例如：某组合相对DPS = 92.65%，则差距 = -7.35%，表示比基准低 7.35%。
+        </div>
+
+        <h3>七、完整算例（最快 + 7发 + 节约）</h3>
+        <div class="formula-block">
+            <span class="comment">// 步骤1：平均射击数</span><br>
+            N = 7 / 0.8 = <span class="num">8.75</span> 枪<br><br>
+            <span class="comment">// 步骤2：循环总帧数</span><br>
+            T_cycle = 54 × 8.75 + 54 = 472.5 + 54 = <span class="num">526.5</span> 帧<br><br>
+            <span class="comment">// 步骤3：每枪平均帧</span><br>
+            F_avg = 526.5 / 8.75 = <span class="num">60.17</span> 帧/枪<br><br>
+            <span class="comment">// 步骤4：假设攻击力 D = 300</span><br>
+            DPS = 300 × 60 / 60.17 = <span class="num">299.15</span><br><br>
+            <span class="comment">// 步骤5：若以自身为基准，相对DPS = 100%</span>
+        </div>
+
+        <h3>八、全部 8 种组合的平均帧数速查</h3>
+        <div class="formula-block">
+            <span class="comment">// 公式：F_avg = 54 + R / N，其中 N = C 或 C/0.8</span><br><br>
+            ① 最快 + 6发 + 无节约：N=6，R=54 → F_avg = 54 + 54/6 = <span class="num">63.00</span><br>
+            ② 快速 + 6发 + 无节约：N=6，R=84 → F_avg = 54 + 84/6 = <span class="num">68.00</span><br>
+            ③ 最快 + 7发 + 无节约：N=7，R=54 → F_avg = 54 + 54/7 ≈ <span class="num">61.71</span><br>
+            ④ 快速 + 7发 + 无节约：N=7，R=84 → F_avg = 54 + 84/7 = <span class="num">66.00</span><br>
+            ⑤ 最快 + 6发 + 节约：N=7.5，R=54 → F_avg = 54 + 54/7.5 = <span class="num">61.20</span><br>
+            ⑥ 快速 + 6发 + 节约：N=7.5，R=84 → F_avg = 54 + 84/7.5 = <span class="num">65.20</span><br>
+            ⑦ 最快 + 7发 + 节约：N=8.75，R=54 → F_avg = 54 + 54/8.75 ≈ <span class="num">60.17</span><br>
+            ⑧ 快速 + 7发 + 节约：N=8.75，R=84 → F_avg = 54 + 84/8.75 = <span class="num">63.60</span>
+        </div>
+
+        <h3>九、注意事项</h3>
+        <p>
+            1. 本计算为<strong>纯打桩期望</strong>，不考虑走位、怪物动作、会心、肉质、距离补正、贯通判定次数等。<br>
+            2. 单发伤害 = 你填写的攻击力，实际游戏还需乘动作值、肉质等系数，但<strong>相对排名不受影响</strong>（因为所有组合同乘一个系数）。<br>
+            3. 弹丸节约按<strong>每次开枪独立判定</strong>处理，可连续触发，数学上等价于每枪消耗 0.8 发。<br>
+            4. 帧率按 <strong>60 FPS</strong> 换算，若游戏实际帧率不同，绝对DPS会变，但<strong>相对排名不变</strong>。
+        </p>
+    </div>
+    <!-- ==================== 公式区结束 ==================== -->
+
+</div>
+
+<script>
+    (function() {
+        // ---------- 固定帧数 ----------
+        const FIRE_FRAMES = 54;
+        const RELOAD_FAST = 54;
+        const RELOAD_QUICK = 84;
+
+        // ---------- 8种状态定义 ----------
+        const COMBOS = [
+            { id: 0, name: '最快 + 6发 + 无节约', reload: 'fast', cap: 6, save: false },
+            { id: 1, name: '快速 + 6发 + 无节约', reload: 'quick', cap: 6, save: false },
+            { id: 2, name: '最快 + 7发 + 无节约', reload: 'fast', cap: 7, save: false },
+            { id: 3, name: '快速 + 7发 + 无节约', reload: 'quick', cap: 7, save: false },
+            { id: 4, name: '最快 + 6发 + 节约', reload: 'fast', cap: 6, save: true },
+            { id: 5, name: '快速 + 6发 + 节约', reload: 'quick', cap: 6, save: true },
+            { id: 6, name: '最快 + 7发 + 节约', reload: 'fast', cap: 7, save: true },
+            { id: 7, name: '快速 + 7发 + 节约', reload: 'quick', cap: 7, save: true }
+        ];
+
+        const DEFAULT_BASE_INDEX = 6;
+        let baseIndex = DEFAULT_BASE_INDEX;
+        let attackValues = new Array(8).fill(300);
+
+        // ---------- 动态生成输入卡片 ----------
+        function renderInputCards() {
+            const grid = document.getElementById('inputGrid');
+            grid.innerHTML = '';
+
+            COMBOS.forEach((combo, idx) => {
+                const card = document.createElement('div');
+                card.className = 'input-card';
+
+                const label = document.createElement('label');
+                label.textContent = `#${idx + 1} 攻击力`;
+
+                const nameDiv = document.createElement('div');
+                nameDiv.className = 'combo-name';
+                nameDiv.textContent = combo.name;
+
+                const input = document.createElement('input');
+                input.type = 'number';
+                input.min = '1';
+                input.step = '1';
+                input.value = attackValues[idx];
+                input.dataset.index = idx;
+
+                input.addEventListener('input', (e) => {
+                    let val = Number(e.target.value);
+                    if (isNaN(val) || val < 1) val = 1;
+                    attackValues[idx] = val;
+                    renderRanking();
+                });
+
+                card.appendChild(label);
+                card.appendChild(nameDiv);
+                card.appendChild(input);
+                grid.appendChild(card);
+            });
+        }
+
+        // ---------- 计算组合帧数信息 ----------
+        function computeComboStats(combo) {
+            const cap = combo.cap;
+            const reloadFrame = combo.reload === 'fast' ? RELOAD_FAST : RELOAD_QUICK;
+            const save = combo.save;
+
+            const avgShots = save ? (cap / 0.8) : cap;
+            const fireTotal = FIRE_FRAMES * avgShots;
+            const cycleFrames = fireTotal + reloadFrame;
+            const framesPerShot = cycleFrames / avgShots;
+
+            return {
+                avgShots,
+                cycleFrames,
+                framesPerShot,
+                reloadFrame,
+                fireTotal
+            };
+        }
+
+        // ---------- 计算所有组合的DPS数据 ----------
+        function computeAllStats() {
+            const atkArray = attackValues.map(v => Number(v) || 1);
+            return COMBOS.map((combo, idx) => {
+                const stats = computeComboStats(combo);
+                const damage = atkArray[idx];
+                const dps = damage * 60 / stats.framesPerShot;
+                return {
+                    ...combo,
+                    idx,
+                    ...stats,
+                    damage,
+                    dps
+                };
+            });
+        }
+
+        // ---------- 渲染排名表格 ----------
+        function renderRanking() {
+            const statsList = computeAllStats();
+            const baseCombo = statsList[baseIndex];
+            const baseDps = baseCombo.dps;
+
+            statsList.forEach(item => {
+                item.relativeDpsPercent = (item.dps / baseDps) * 100;
+                item.diffPercent = item.relativeDpsPercent - 100;
+            });
+
+            const sorted = [...statsList].sort((a, b) => b.relativeDpsPercent - a.relativeDpsPercent);
+            const tbody = document.getElementById('tableBody');
+            tbody.innerHTML = '';
+
+            sorted.forEach((item, rank) => {
+                const tr = document.createElement('tr');
+                const isBase = (item.idx === baseIndex);
+                if (isBase) tr.classList.add('base-row');
+                else if (rank === 0) tr.classList.add('rank-1');
+
+                tr.addEventListener('click', () => {
+                    if (baseIndex !== item.idx) {
+                        baseIndex = item.idx;
+                        renderRanking();
+                    }
+                });
+                tr.title = isBase ? '当前基准 (100%)' : '点击设为基准';
+
+                const tdRank = document.createElement('td');
+                tdRank.textContent = rank + 1;
+                tr.appendChild(tdRank);
+
+                const tdName = document.createElement('td');
+                tdName.textContent = item.name;
+                if (isBase) {
+                    const tag = document.createElement('span');
+                    tag.className = 'base-tag';
+                    tag.textContent = '基准';
+                    tdName.appendChild(tag);
+                }
+                tr.appendChild(tdName);
+
+                const tdReload = document.createElement('td');
+                tdReload.textContent = item.reload === 'fast' ? '最快' : '快速';
+                tr.appendChild(tdReload);
+
+                const tdCap = document.createElement('td');
+                tdCap.textContent = item.cap + ' 发';
+                tr.appendChild(tdCap);
+
+                const tdSave = document.createElement('td');
+                tdSave.textContent = item.save ? '有' : '无';
+                tr.appendChild(tdSave);
+
+                const tdAtk = document.createElement('td');
+                tdAtk.textContent = item.damage;
+                tr.appendChild(tdAtk);
+
+                const tdShots = document.createElement('td');
+                tdShots.textContent = item.avgShots.toFixed(2);
+                tr.appendChild(tdShots);
+
+                const tdFrames = document.createElement('td');
+                tdFrames.textContent = item.framesPerShot.toFixed(2);
+                tr.appendChild(tdFrames);
+
+                const tdRelative = document.createElement('td');
+                tdRelative.textContent = item.relativeDpsPercent.toFixed(2) + '%';
+                if (isBase) tdRelative.classList.add('highlight');
+                tr.appendChild(tdRelative);
+
+                const tdDiff = document.createElement('td');
+                const diffValue = item.diffPercent;
+                if (Math.abs(diffValue) < 0.005) {
+                    tdDiff.textContent = '基准';
+                    tdDiff.classList.add('highlight');
+                } else {
+                    tdDiff.textContent = (diffValue > 0 ? '+' : '') + diffValue.toFixed(2) + '%';
+                    tdDiff.classList.add(diffValue > 0 ? 'positive' : 'negative');
+                }
+                tr.appendChild(tdDiff);
+
+                const tdDps = document.createElement('td');
+                tdDps.textContent = item.dps.toFixed(1);
+                tdDps.className = 'dps-cell';
+                tr.appendChild(tdDps);
+
+                tbody.appendChild(tr);
+            });
+
+            const badge = document.getElementById('baseBadge');
+            badge.innerHTML = `基准: ${baseCombo.name} · 攻击力${baseCombo.damage} · 100% <span style="opacity:0.7;font-size:0.7rem;">(点击行切换)</span>`;
+        }
+
+        // ---------- 重置默认 ----------
+        function resetDefaults() {
+            attackValues = new Array(8).fill(300);
+            baseIndex = DEFAULT_BASE_INDEX;
+            const inputs = document.querySelectorAll('#inputGrid input');
+            inputs.forEach((input) => {
+                input.value = 300;
+            });
+            renderRanking();
+        }
+
+        function resetBase() {
+            baseIndex = DEFAULT_BASE_INDEX;
+            renderRanking();
+        }
+
+        // ---------- 初始化 ----------
+        function init() {
+            renderInputCards();
+
+            document.getElementById('calcBtn').addEventListener('click', renderRanking);
+            document.getElementById('resetBtn').addEventListener('click', resetDefaults);
+
+            const badge = document.getElementById('baseBadge');
+            badge.addEventListener('click', (e) => {
+                e.stopPropagation();
+                resetBase();
+            });
+
+            renderRanking();
+        }
+
+        init();
+    })();
+</script>
+</body>
+</html>
